@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <script
+      src="https://use.fontawesome.com/releases/v5.13.0/js/all.js"
+      data-auto-a11y="true"
+    ></script>
+
+    <style type="text/css">
+        #overlay{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+        }
+    </style>
+
+    <title>Haaay</title>
+  </head>
+  <body>
+    
+
+    <div id="app">
+        <div class="container-fluid">
+            <div class="row bg-dark">
+                <div class="col-lg-12">
+                    <p class="text-center text-light display-4 pt-2" style="font-size: 25px;">
+                        CRUD TUGAS KULIAH
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row mt-3">
+                <div class="col-lg-6">
+                    <h3 class="text-info">
+                        Registered
+                    </h3>
+                </div>
+                <div class="col-lg-6">
+                    <button class="btn btn-info float-right" @click="showaddTugas=true">
+                        <i class="fas fa-user"></i>&nbsp;&nbsp;Add New User
+                    </button>
+                </div>
+            </div>
+            <hr class="bg-info">
+            <div class="alert alert-danger" v-if="errMsg">
+                {{errMsg}}
+            </div>
+            <div class="alert alert-success" v-if="sccsMsg">
+                {{sccsMsg}}
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    
+                        <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="text-center bg-info text-light">
+                                <th scope="col">ID</th>
+                                <th scope="col">nama_tugas</th>
+                                <th scope="col">mata_kuliah</th>
+                                <th scope="col">Tanggal_selesai</th>
+                                <th scope="col">Kondisi_sekarang</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center" v-for="tugass in tugas">
+                                <td>{{ tugass.id }}</td>
+                                <td>{{ tugass.nama_tugas }}</th>
+                                <td>{{ tugass.mata_pelajaran }}</td>
+                                <td>{{ tugass.batas_waktu }}</td>
+                                <td>{{ tugass.kondisi_sekarang }}</td>
+                                <td><a href="#" class="text-success" @click="editTugas=true; selectTugas(tugass);"><i class="fas fa-edit"></i></a></td>
+                                <td><a href="#" class="text-danger" @click="hapusTugas=true; selectTugas(tugass);"><i class="fas fa-trash"></i></a></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    
+                </div>
+            </div>
+        </div>
+    
+        <!-- tambah tugas -->
+        <div id="overlay" v-if="showaddTugas">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tambah tugas</h5>
+                        <button type="button" class="close" @click="showaddTugas=false">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                            
+                    </div>
+                    <div class="modal-body p-4">
+                        <form action="#" method="post">
+                            <div class="form-group">
+                                <input type="text" name="nama_tugas" class="form-control form-control-lg" placeholder="Nama tugas" v-model="newTugas.nama_tugas">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="mata_kuliah" class="form-control form-control-lg" placeholder="Mata Kuliah" v-model="newTugas.mata_pelajaran">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="Tanggal_selesai" class="form-control form-control-lg" placeholder="Tanggal selesai" v-model="newTugas.batas_waktu">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="Kondisi_sekarang" class="form-control form-control-lg" placeholder="Kondisi sekarang" v-model="newTugas.kondisi_sekarang">
+                            </div>
+                        
+                            <div class="form-group">
+                                <button class="btn btn-info btn-block btn-lg" @click="showaddTugas=false; addTugas(); clearMsg();">Tambahin sekarang</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Ubah tugas -->
+        <div id="overlay" v-if="editTugas">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">edit tugas</h5>
+                        <button type="button" class="close" @click="editTugas=false">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                            
+                    </div>
+                    <div class="modal-body p-4">
+                        <form action="#" method="post">
+                            <div class="form-group">
+                                <input type="text" name="nama_tugas" class="form-control form-control-lg" v-model="currentTugas.nama_tugas">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="mata_kuliah" class="form-control form-control-lg" v-model="currentTugas.mata_pelajaran">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="Tanggal_selesai" class="form-control form-control-lg" v-model="currentTugas.batas_waktu">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="Kondisi_sekarang" class="form-control form-control-lg" v-model="currentTugas.kondisi_sekarang">
+                            </div>
+                        
+                            <div class="form-group">
+                                <button class="btn btn-info btn-block btn-lg" @click="editTugas=false; updateTugas(); clearMsg();">Edit sekarang</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hapus tugas -->
+        <div id="overlay" v-if="hapusTugas">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hapus tugas</h5>
+                        <button type="button" class="close" @click="hapusTugas=false">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                            
+                    </div>
+                    <div class="modal-body p-4">
+                        <h4 class="text-danger">Yakin udah selesai??</h4>
+                        <h5>Kamu menghapus tugas {{currentTugas.nama_tugas}}</h5>
+                        <button class="btn btn-danger btn-lg" @click="hapusTugas=false; deleteTugas(); clearMsg();">Yes</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-success btn-lg" @click="hapusTugas=false">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data:{
+            errMsg: "",
+            sccsMsg: "",
+            showaddTugas: false,
+            editTugas: false,
+            hapusTugas: false,
+            tugas: [],
+            newTugas: {nama_tugas: "", mata_pelajaran: "", batas_waktu: "", kondisi_sekarang: ""},
+            currentTugas: {} 
+        },
+        mounted: function(){
+            this.getAllTugas();
+        },
+        methods: {
+            getAllTugas(){
+                axios.get("http://localhost/mycrud/process.php?action=read").then(function(response){
+                    if(response.data.error){
+                        app.errMsg = response.data.message;
+                    }
+                    else{
+                        app.tugas = response.data.tugas;
+                    }
+                });
+            },
+            addTugas(){
+                var formData = app.toFormData(app.newTugas);
+                axios.post("http://localhost/mycrud/process.php?action=create",  formData).then(function(response){
+                    app.newTugas = {nama_tugas: "", mata_pelajaran: "", batas_waktu: "", kondisi_sekarang: ""};
+                    if(response.data.error){
+                    
+                        app.errMsg = response.data.message;
+                    }
+                    else{
+                        app.sccsMsg = response.data.message;
+                        app.getAllTugas();
+                    }
+                });
+            },
+            updateTugas(){
+                var formData = app.toFormData(app.currentTugas);
+                axios.post("http://localhost/mycrud/process.php?action=update",  formData).then(function(response){
+                    app.currentTugas = {};
+                    if(response.data.error){
+                    
+                        app.errMsg = response.data.message;
+                    }
+                    else{
+                        app.sccsMsg = response.data.message;
+                        app.getAllTugas();
+                    }
+                });
+            },
+            deleteTugas(){
+                var formData = app.toFormData(app.currentTugas);
+                axios.post("http://localhost/mycrud/process.php?action=delete",  formData).then(function(response){
+                    app.currentTugas = {};
+                    if(response.data.error){
+                    
+                        app.errMsg = response.data.message;
+                    }
+                    else{
+                        app.sccsMsg = response.data.message;
+                        app.getAllTugas();
+                    }
+                });
+            },
+            toFormData(obj){
+                var fd = new FormData();
+                for(var i in obj){
+                    fd.append(i,obj[i]);
+                }
+                return fd;
+            },
+            selectTugas(tugass){
+                app.currentTugas = tugass;
+            },
+            clearMsg(){
+                app.errMsg = "";
+                app.sccsMsg = "";
+            }
+        }
+    });
+    </script>
+</body>
+</html>
+
